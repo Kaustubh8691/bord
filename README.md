@@ -1,1 +1,1 @@
-# bordfree    https://bordfree-golang.netlify.app/   gonic-gin and  reactjs
+# bordfree    https://bordfree-golang.netlify.app/  
