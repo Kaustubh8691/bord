@@ -1,35 +1,61 @@
 package main
 
 import (
-	"borderfree/handler"
-	"borderfree/router"
-	"fmt"
 	"os"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	jwtware "github.com/gofiber/jwt/v3"
+	routes "github.com/Kaustubh8691/golang-backend/routes"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
+// func CORSMiddleware() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+// 		c.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+// 		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+// 		// c.Writer.Header().Add("Access-Control-Allow-Origin", "http://localhost:8080")
+// 		// c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+// 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+// 		c.Writer.Header().Add("Access-Control-Allow-Credentials", "true")
+
+// 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+// 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+// 		c.Writer.Header().Add("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+// 		c.Writer.Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+// 		if c.Request.Method == "OPTIONS" {
+// 			c.AbortWithStatus(204)
+// 			return
+// 		}
+
+// 		c.Next()
+// 	}
+// }
+
+
 func main() {
-	app := fiber.New()
+	port := os.Getenv("PORT")
 
-	app.Use(logger.New())
-	app.Use(cors.New())
+	if port == "" {
+		port = "8000"
+	}
 
-	fmt.Println("email is")
-	auth := app.Group("/auth")
-	auth.Post("/login", handler.Login)
-	fmt.Println("insideauth abd login")
-	auth.Post("/register", handler.Register)
+	// router := gin.New()
+	router := gin.Default()
+	router.Use(gin.Logger())
+	
+	router.Use(cors.Default())
 
-	app.Use(jwtware.New(jwtware.Config{
-		SigningKey: []byte("ANiceLittleSecretOfMine987654321"),
-	}))
+	routes.AuthRoutes(router)
+	routes.UserRoutes(router)
 
-	router.SetupSecuredRoutes(app)
-	// app.Listen(":5050")
-	app.Listen(":" + os.Getenv("PORT"))
+	router.GET("/api", func(c *gin.Context) {
+		c.JSON(200, gin.H{"success": "access granted"})
+	})
+	router.GET("/api2", func(c *gin.Context) {
+		c.JSON(200, gin.H{"success": "access granted in 2"})
+	})
 
+	router.Run(":" + port)
 }
