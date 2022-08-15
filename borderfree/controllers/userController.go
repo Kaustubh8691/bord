@@ -209,6 +209,7 @@ func GetUser() gin.HandlerFunc {
 }
 func Crea() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		var data models.Data
 
@@ -233,8 +234,10 @@ func Crea() gin.HandlerFunc {
 		data.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 
 		data.ID = primitive.NewObjectID()
-		data1 := data.ID.Hex()
-		data.User_id = data1
+		// data1 := data.ID.Hex()
+		var email = c.Param("email")
+
+		data.User_id = email
 
 		resultInsertionNumber, insertErr := dataCollection.InsertOne(ctx, data)
 		if insertErr != nil {
@@ -272,16 +275,12 @@ func GetData() gin.HandlerFunc {
 func Data() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId := c.Param("user_id")
+		fmt.Println("data", c.Request.Header["Token"])
 
-		// if err := helper.MatchUserTypeToid(c, userId); err != nil {
-		// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		// 	return
-		// }
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-
 		// var data models.Data
 		// cursor,err := dataCollection.Find(ctx, bson.M{"name": userId}).Decode(&data)
-		cursor, err := dataCollection.Find(ctx, bson.M{"name": userId})
+		cursor, err := dataCollection.Find(ctx, bson.M{"user_id": userId})
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -12,7 +12,7 @@ func UserRoutes(incomingRoutes *gin.Engine) {
 
 	incomingRoutes.GET("/user/:user_id", controller.GetUser())
 	incomingRoutes.GET("/data", controller.GetData())
-	incomingRoutes.POST("/datas", controller.Crea())
+	incomingRoutes.POST("/datas/:email", controller.Crea())
 	// incomingRoutes.GET("/data/:user_id", controller.GetData())
 	incomingRoutes.GET("/data/:user_id", controller.Data())
 	incomingRoutes.PUT("/data/:user_id", controller.UpdateData())
